@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio - Salsabila Apriyani</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        love: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            900: '#881337',
+                        },
+                        romantic: {
+                            500: '#ec4899',
+                            600: '#db2777',
+                            800: '#831843',
+                            950: '#1a050e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CUSTOM ANIMATIONS & LOVE EFFECTS -->
+    <style>
+        /* Floating Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Cursor Heart Trail Canvas */
+        #cursor-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Heart Beat Animation */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .animate-heartbeat {
+            animation: heartbeat 1.6s infinite ease-in-out;
+        }
+
+        /* Heart Floating Elements */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        .animate-float-slow {
+            animation: floatSlow 4.5s ease-in-out infinite;
+        }
+
+        /* Glassmorphism Dark/Rose */
+        .glass-rose {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 113, 133, 0.25);
+        }
+
+        .glass-dark {
+            background: rgba(26, 5, 14, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        /* Glowing Heart Border */
+        @keyframes loveGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(244, 63, 94, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(244, 63, 94, 0.8), 0 0 15px rgba(236, 72, 153, 0.6); }
+        }
+        .love-glow {
+            animation: loveGlow 3s infinite ease-in-out;
+        }
+
+        /* Music Visualizer Wave Animation */
+        .music-wave span {
+            display: inline-block;
+            width: 3px;
+            height: 14px;
+            background-color: #f43f5e;
+            margin: 0 1.5px;
+            border-radius: 3px;
+            animation: wave 1.2s infinite ease-in-out;
+        }
+        .music-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.4s; }
+        .music-wave span:nth-child(4) { animation-delay: 0.6s; }
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 18px; }
+        }
+        .music-paused span {
+            animation-play-state: paused !important;
+            height: 4px !important;
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 3D Tilt Card */
+        .tilt-card {
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-love-500 selection:text-white overflow-x-hidden">
+
+    <!-- CANVAS PARTICLES & CURSOR HEARTS -->
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="cursor-canvas"></canvas>
+
+    <!-- Background Romantic Music Audio Player -->
+    <audio id="bg-audio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Audio Control Widget with Heart Pulsing -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <div class="bg-romantic-950/90 backdrop-blur-md text-white p-3.5 rounded-full shadow-2xl flex items-center gap-3 border border-love-500/40 love-glow transition-all hover:scale-105">
+            <button id="music-toggle" class="w-11 h-11 rounded-full bg-gradient-to-r from-love-600 to-romantic-600 hover:from-love-500 hover:to-romantic-500 flex items-center justify-center transition focus:outline-none shadow-md animate-heartbeat" title="Putar Musik Romantis">
+                <i id="music-icon" class="fas fa-heart text-white text-base"></i>
+            </button>
+            <div class="pr-2 hidden sm:block">
+                <p class="text-xs font-bold leading-none text-rose-200">Musik Ambient</p>
+                <p id="music-status" class="text-[10px] text-rose-300/80 mt-0.5">Putar Musik ♥</p>
+            </div>
+            <div id="music-wave" class="music-wave music-paused flex items-end h-4 pr-2">
+                <span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-rose-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand Logo with Floating Heart -->
+                <a href="#home" class="flex items-center gap-2 group">
+                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-love-600 to-romantic-500 flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-heart text-sm"></i>
+                    </span>
+                    <span class="font-serif font-bold text-xl tracking-wide text-white">Salsabila<span class="text-love-400">.A</span></span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#about" class="text-rose-100/80 hover:text-love-400 transition flex items-center gap-1.5"><i class="fas fa-heart text-[10px] text-love-500"></i> Tentang Saya</a>
+                    <a href="#experience" class="text-rose-100/80 hover:text-love-400 transition flex items-center gap-1.5"><i class="fas fa-heart text-[10px] text-love-500"></i> Pengalaman</a>
+                    <a href="#gallery" class="text-rose-100/80 hover:text-love-400 transition flex items-center gap-1.5"><i class="fas fa-heart text-[10px] text-love-500"></i> Sertifikat & Galeri</a>
+                    <a href="#skills" class="text-rose-100/80 hover:text-love-400 transition flex items-center gap-1.5"><i class="fas fa-heart text-[10px] text-love-500"></i> Keahlian</a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-love-600 to-romantic-600 text-white hover:shadow-lg hover:shadow-love-600/40 transition shadow-md flex items-center gap-2">
+                        <i class="fas fa-envelope-open-text"></i> Kontak Saya
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-rose-200 p-2 focus:outline-none" aria-label="Toggle Menu">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-b border-rose-900/40 px-4 pt-2 pb-4 space-y-3">
+            <a href="#about" class="block text-rose-200 hover:text-love-400 font-medium py-1">Tentang Saya</a>
+            <a href="#experience" class="block text-rose-200 hover:text-love-400 font-medium py-1">Pengalaman</a>
+            <a href="#gallery" class="block text-rose-200 hover:text-love-400 font-medium py-1">Sertifikat & Galeri</a>
+            <a href="#skills" class="block text-rose-200 hover:text-love-400 font-medium py-1">Keahlian</a>
+            <a href="#contact" class="block text-center py-2.5 rounded-xl bg-gradient-to-r from-love-600 to-romantic-600 text-white font-medium">Kontak Saya</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION WITH HEART ANIMATIONS -->
+    <section id="home" class="relative pt-12 pb-24 lg:pt-28 lg:pb-32 overflow-hidden min-h-[90vh] flex items-center z-10">
+        <!-- Ambient Glowing Love Orbs -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-tr from-love-600/30 to-romantic-600/30 blur-3xl -z-10 rounded-full love-glow"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Text Left -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left reveal active">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-love-950/80 border border-love-500/40 text-love-300 text-xs font-semibold uppercase tracking-wider shadow-md">
+                        <i class="fas fa-heart text-love-500 animate-pulse"></i>
+                        Visual Communication Design & IT
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-tight">
+                        Halo, Saya <br>
+                        <span class="bg-gradient-to-r from-rose-300 via-love-400 to-romantic-400 bg-clip-text text-transparent italic">Salsabila Apriyani</span>
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-rose-100/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        Lulusan <strong class="text-rose-200 font-semibold">Desain Komunikasi Visual</strong> SMKN 1 Nguling & Mahasiswa <strong class="text-rose-200 font-semibold">Teknik Informatika UNESA</strong>. Memiliki dedikasi tinggi, berjiwa kepemimpinan, dan berprestasi di bidang olahraga beladiri serta Paskibraka.
+                    </p>
+
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-xs sm:text-sm text-rose-200/90 pt-1">
+                        <span class="flex items-center gap-1.5"><i class="fas fa-location-dot text-love-400"></i> Surabaya, Jawa Timur</span>
+                        <span class="flex items-center gap-1.5"><i class="fas fa-envelope text-romantic-400"></i> bilabilll242@gmail.com</span>
+                        <span class="flex items-center gap-1.5"><i class="fab fa-whatsapp text-emerald-400"></i> +62 888 0498 7186</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#contact" class="px-7 py-3.5 rounded-full bg-gradient-to-r from-love-600 via-rose-600 to-romantic-600 text-white font-medium hover:shadow-xl hover:shadow-love-600/50 transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-1">
+                            <i class="fas fa-heart"></i> Hubungi Saya
+                        </a>
+                        <a href="#gallery" class="px-7 py-3.5 rounded-full bg-slate-900/90 text-rose-200 border border-love-500/40 font-medium hover:bg-love-950/50 transition-all shadow-md flex items-center gap-2 transform hover:-translate-y-1">
+                            <i class="fas fa-award text-amber-400"></i> Galeri & Sertifikat
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Profile Card Right with Glowing Heart Frame -->
+                <div class="lg:col-span-5 flex justify-center reveal active">
+                    <div class="relative w-full max-w-md animate-float-slow">
+                        <!-- Heart Pulse Backing -->
+                        <div class="absolute -inset-1.5 bg-gradient-to-r from-love-600 via-romantic-500 to-rose-500 rounded-3xl blur-xl opacity-60 love-glow"></div>
+                        
+                        <div class="tilt-card relative bg-slate-900/90 rounded-3xl p-6 shadow-2xl border border-love-500/30 backdrop-blur-xl">
+                            <!-- Image Frame -->
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] mb-5 bg-slate-950 group">
+                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop" 
+                                     alt="Salsabila Apriyani" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                     onerror="this.src='https://placehold.co/400x500/881337/ffffff?text=Salsabila+Apriyani'">
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                                
+                                <div class="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 border border-love-500/50 flex items-center justify-center text-love-400 text-sm shadow-lg animate-heartbeat">
+                                    ♥
+                                </div>
+
+                                <div class="absolute bottom-4 left-4 right-4 text-white">
+                                    <span class="px-3 py-0.5 rounded-full bg-love-900/80 backdrop-blur-md text-[10px] font-bold tracking-wider uppercase mb-1.5 inline-block border border-love-500/40 text-love-200">
+                                        PPI KAB. PASURUAN
+                                    </span>
+                                    <p class="font-serif font-bold text-xl text-rose-100">Salsabila Apriyani</p>
+                                    <p class="text-xs text-rose-300/80">Visual Designer & IT Undergraduate</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <a href="https://linkedin.com/in/salsabila-apriyani-1244183b3" target="_blank" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-slate-950/80 hover:bg-love-950 text-rose-200 hover:text-love-300 border border-love-900/50 transition text-xs font-semibold">
+                                    <i class="fab fa-linkedin text-base text-blue-400"></i> LinkedIn
+                                </a>
+                                <a href="https://instagram.com/april.04" target="_blank" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-slate-950/80 hover:bg-love-950 text-rose-200 hover:text-love-300 border border-love-900/50 transition text-xs font-semibold">
+                                    <i class="fab fa-instagram text-base text-pink-400"></i> @april.04
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT ME SECTION -->
+    <section id="about" class="py-20 bg-slate-900/60 border-y border-rose-900/30 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <span class="text-love-400 text-xs font-bold uppercase tracking-widest"><i class="fas fa-heart text-[10px]"></i> Profil Singkat</span>
+                <h2 class="text-3xl font-serif font-bold text-white mt-1 mb-3">Tentang Saya</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-love-500 to-romantic-500 mx-auto rounded-full mb-4"></div>
+                <p class="text-rose-100/70 text-sm">Mengenal lebih dekat keahlian, kepemimpinan, dan minat pribadi saya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="tilt-card bg-slate-950/80 p-7 rounded-2xl border border-rose-900/40 hover:border-love-500/60 transition-all duration-300 reveal shadow-lg hover:shadow-love-950/50">
+                    <div class="w-12 h-12 rounded-2xl bg-love-950 text-love-400 flex items-center justify-center text-xl mb-5 shadow-inner border border-love-800/40">
+                        <i class="fas fa-heart flex"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-rose-100 mb-2">Profil & Karakter</h3>
+                    <p class="text-rose-200/70 text-xs sm:text-sm leading-relaxed">
+                        Pribadi yang disiplin, ramah, dan teliti. Berkat pengalaman di Paskibraka dan organisasi sekolah, saya terbiasa memimpin tim, menjaga etika profesional, serta menyelesaikan masalah secara taktis.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="tilt-card bg-slate-950/80 p-7 rounded-2xl border border-rose-900/40 hover:border-love-500/60 transition-all duration-300 reveal shadow-lg hover:shadow-love-950/50">
+                    <div class="w-12 h-12 rounded-2xl bg-romantic-950 text-romantic-400 flex items-center justify-center text-xl mb-5 shadow-inner border border-romantic-800/40">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-rose-100 mb-2">Riwayat Pendidikan</h3>
+                    <ul class="space-y-3 text-xs sm:text-sm text-rose-200/70">
+                        <li class="border-b border-rose-900/30 pb-2.5">
+                            <span class="font-bold text-rose-100 block">Universitas Negeri Surabaya (UNESA)</span>
+                            <span class="text-xs text-rose-300/60">S1 Teknik Informatika</span>
+                        </li>
+                        <li>
+                            <span class="font-bold text-rose-100 block">SMK Negeri 1 Nguling</span>
+                            <span class="text-xs text-rose-300/60">Desain Komunikasi Visual (2023 - 2026)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="tilt-card bg-slate-950/80 p-7 rounded-2xl border border-rose-900/40 hover:border-love-500/60 transition-all duration-300 reveal shadow-lg hover:shadow-love-950/50">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-950 text-rose-400 flex items-center justify-center text-xl mb-5 shadow-inner border border-rose-800/40">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-rose-100 mb-2">Olahraga & Hobi</h3>
+                    <p class="text-rose-200/70 text-xs sm:text-sm leading-relaxed mb-4">
+                        Aktif melatih ketahanan fisik & fokus melalui olahraga rutin beladiri dan aktivitas fisik:
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 rounded-full bg-slate-900 border border-love-900/60 text-xs font-semibold text-rose-200"><i class="fas fa-swimmer text-cyan-400 mr-1"></i> Berenang</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-900 border border-love-900/60 text-xs font-semibold text-rose-200"><i class="fas fa-table-tennis text-emerald-400 mr-1"></i> Bulu Tangkis</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-900 border border-love-900/60 text-xs font-semibold text-rose-200"><i class="fas fa-hand-fist text-rose-400 mr-1"></i> Karate & Tapak Suci</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE SECTION -->
+    <section id="experience" class="py-20 bg-slate-950 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <span class="text-love-400 text-xs font-bold uppercase tracking-widest"><i class="fas fa-heart text-[10px]"></i> Jejak Langkah</span>
+                <h2 class="text-3xl font-serif font-bold text-white mt-1 mb-3">Pengalaman & Kepemimpinan</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-love-500 to-romantic-500 mx-auto rounded-full mb-4"></div>
+            </div>
+
+            <div class="relative max-w-4xl mx-auto">
+                <div class="hidden sm:block absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-rose-900/40"></div>
+
+                <div class="space-y-10">
+                    <!-- Exp Item 1 -->
+                    <div class="relative flex flex-col sm:flex-row items-center reveal">
+                        <div class="flex items-center justify-start w-full mx-auto">
+                            <div class="w-full sm:w-1/2 sm:pr-8">
+                                <div class="tilt-card bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-rose-900/40 hover:border-love-500/60 transition">
+                                    <span class="px-3 py-1 rounded-full bg-love-950 text-love-300 text-xs font-bold border border-love-800/40">Jan 2025 - Jun 2025</span>
+                                    <h3 class="text-lg font-serif font-bold text-white mt-3">Customer Service & Resepsionis Intern</h3>
+                                    <p class="text-xs font-semibold text-love-400 mb-3">Dinas Koperasi Pasuruan</p>
+                                    <ul class="text-xs text-rose-200/70 space-y-1.5 list-disc pl-4">
+                                        <li>Melayani tamu utama dan masyarakat dengan pelayanan ramah & solutif.</li>
+                                        <li>Mengelola pemrosesan data UMKM lokal dan mengarsipkan surat-menyurat.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-love-600 text-white text-xs font-bold border-4 border-slate-950 shadow-lg">
+                            ♥
+                        </div>
+                    </div>
+
+                    <!-- Exp Item 2 -->
+                    <div class="relative flex flex-col sm:flex-row items-center reveal">
+                        <div class="flex items-center justify-end w-full mx-auto">
+                            <div class="w-full sm:w-1/2 sm:pl-8">
+                                <div class="tilt-card bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-rose-900/40 hover:border-love-500/60 transition">
+                                    <span class="px-3 py-1 rounded-full bg-romantic-950 text-romantic-300 text-xs font-bold border border-romantic-800/40">Aug 2025 - Sekarang</span>
+                                    <h3 class="text-lg font-serif font-bold text-white mt-3">Anggota & Instruktur Paskibraka</h3>
+                                    <p class="text-xs font-semibold text-romantic-400 mb-3">Purna Paskibraka Indonesia (PPI) Pasuruan</p>
+                                    <ul class="text-xs text-rose-200/70 space-y-1.5 list-disc pl-4">
+                                        <li>Membimbing dan mendisiplinkan calon Paskibraka tingkat kabupaten.</li>
+                                        <li>Melatih kekompakan baris-berbaris dan mentalitas kepemimpinan.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-romantic-600 text-white text-xs font-bold border-4 border-slate-950 shadow-lg">
+                            ♥
+                        </div>
+                    </div>
+
+                    <!-- Exp Item 3 -->
+                    <div class="relative flex flex-col sm:flex-row items-center reveal">
+                        <div class="flex items-center justify-start w-full mx-auto">
+                            <div class="w-full sm:w-1/2 sm:pr-8">
+                                <div class="tilt-card bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-rose-900/40 hover:border-love-500/60 transition">
+                                    <span class="px-3 py-1 rounded-full bg-rose-950 text-rose-300 text-xs font-bold border border-rose-800/40">2024 - 2025</span>
+                                    <h3 class="text-lg font-serif font-bold text-white mt-3">Sekretaris Utama Pramuka</h3>
+                                    <p class="text-xs font-semibold text-rose-400 mb-3">SMKN 1 Nguling</p>
+                                    <ul class="text-xs text-rose-200/70 space-y-1.5 list-disc pl-4">
+                                        <li>Bertanggung jawab atas arsip, proposal kegiatan, dan notulensi rapat.</li>
+                                        <li>Mengoordinasikan logistik latihan rutin dan persiapan perkemahan.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-rose-600 text-white text-xs font-bold border-4 border-slate-950 shadow-lg">
+                            ♥
+                        </div>
+                    </div>
+
+                    <!-- Exp Item 4 -->
+                    <div class="relative flex flex-col sm:flex-row items-center reveal">
+                        <div class="flex items-center justify-end w-full mx-auto">
+                            <div class="w-full sm:w-1/2 sm:pl-8">
+                                <div class="tilt-card bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-rose-900/40 hover:border-love-500/60 transition">
+                                    <span class="px-3 py-1 rounded-full bg-love-950 text-love-300 text-xs font-bold border border-love-800/40">2024 - 2025</span>
+                                    <h3 class="text-lg font-serif font-bold text-white mt-3">Wakil Komandan Paskibra</h3>
+                                    <p class="text-xs font-semibold text-love-400 mb-3">SMKN 1 Nguling</p>
+                                    <ul class="text-xs text-rose-200/70 space-y-1.5 list-disc pl-4">
+                                        <li>Memimpin kedisiplinan barisan pleton serta mengevaluasi rutinitas latihan.</li>
+                                        <li>Mendampingi operasional utama dalam pelaksanaan upacara sekolah.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-love-600 text-white text-xs font-bold border-4 border-slate-950 shadow-lg">
+                            ♥
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CERTIFICATES & GALLERY SECTION -->
+    <section id="gallery" class="py-20 bg-slate-900/60 border-t border-rose-900/30 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 reveal">
+                <span class="text-love-400 text-xs font-bold uppercase tracking-widest"><i class="fas fa-heart text-[10px]"></i> Portofolio Prestasi</span>
+                <h2 class="text-3xl font-serif font-bold text-white mt-1 mb-3">Sertifikat & Galeri Kegiatan</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-love-500 to-romantic-500 mx-auto rounded-full mb-4"></div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex justify-center flex-wrap gap-3 mb-10 reveal">
+                <button onclick="filterGallery('all')" class="filter-btn px-6 py-2 rounded-full text-xs font-bold transition bg-gradient-to-r from-love-600 to-romantic-600 text-white shadow-lg" data-filter="all">Semua Foto ♥</button>
+                <button onclick="filterGallery('certificate')" class="filter-btn px-6 py-2 rounded-full text-xs font-bold transition bg-slate-900 text-rose-200 border border-rose-900/50 hover:bg-love-950" data-filter="certificate">Sertifikat & Kejuaraan</button>
+                <button onclick="filterGallery('activity')" class="filter-btn px-6 py-2 rounded-full text-xs font-bold transition bg-slate-900 text-rose-200 border border-rose-900/50 hover:bg-love-950" data-filter="activity">Kegiatan & Organisasi</button>
+            </div>
+
+            <!-- Gallery Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="gallery-grid">
+                
+                <!-- Gallery Item 1 -->
+                <div class="gallery-item certificate group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30" 
+                     onclick="openModal('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000&auto=format&fit=crop', 'Sertifikat Paskibraka Kabupaten Pasuruan', 'Sertifikat Penghargaan Kehormatan yang dianugerahkan oleh Bupati Pasuruan atas suksesnya penugasan Pengibaran Bendera Pusaka.')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=800&auto=format&fit=crop" alt="Paskibraka Pasuruan" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-800/40 mb-2">Penghargaan Bupati</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Paskibraka Kab. Pasuruan (2025)</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Sertifikat Kehormatan Pasukan Pengibar Bendera.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="gallery-item certificate group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30"
+                     onclick="openModal('https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=1000&auto=format&fit=crop', 'Juara 2 Karate Piala Bupati Pasuruan', 'Meraih Medali Perak / Juara 2 Kategori Kumite Perorangan +54 kg Putri dalam ajang Karate Bupati Cup Pasuruan.')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=800&auto=format&fit=crop" alt="Karate Regent Cup" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-200 border border-slate-700 mb-2">Juara 2 Perak</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Karate Bupati Cup Pasuruan (2024)</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Individual Kumite +54 kg Female.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 3 -->
+                <div class="gallery-item certificate group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30"
+                     onclick="openModal('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1000&auto=format&fit=crop', 'Juara 3 Kejuaraan Karate Pelajar', 'Meraih Medali Perunggu / Juara 3 Kejuaraan Daerah Karate Pelajar Kab. Pasuruan (Kumite +50 kg Junior Putri).')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800&auto=format&fit=crop" alt="Karate Pelajar" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-orange-950 text-orange-300 border border-orange-800/40 mb-2">Juara 3 Perunggu</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Karate Student Championship (2024)</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Individual Kumite +50 kg Junior Female.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 4 -->
+                <div class="gallery-item certificate group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30"
+                     onclick="openModal('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1000&auto=format&fit=crop', 'Juara 2 Tapak Suci Jember Open', 'Meraih Medali Perak Kejuaraan Pencak Silat Tapak Suci Jember Open Championship Kategori Kelas F Remaja Putri.')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop" alt="Tapak Suci Jember Open" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-200 border border-slate-700 mb-2">Juara 2 Perak</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Tapak Suci Jember Open (2022)</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Class F Youth Female Martial Arts.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 5 -->
+                <div class="gallery-item activity group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30"
+                     onclick="openModal('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1000&auto=format&fit=crop', 'Pelayanan Publik Dinas Koperasi', 'Dokumentasi aktivitas pelayanan masyarakat & pengolahan data UMKM saat magang di Dinas Koperasi Pasuruan.')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=800&auto=format&fit=crop" alt="Dinas Koperasi Intern" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-blue-950 text-blue-300 border border-blue-800/40 mb-2">Magang Kerja</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Dinas Koperasi Pasuruan</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Pelayanan umum & kesekretariatan.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 6 -->
+                <div class="gallery-item activity group relative bg-slate-950 rounded-2xl overflow-hidden border border-rose-900/40 hover:border-love-500/70 transition-all duration-500 cursor-pointer reveal hover:shadow-2xl hover:shadow-love-600/30"
+                     onclick="openModal('https://images.unsplash.com/photo-1526976668912-1a811878dd37?q=80&w=1000&auto=format&fit=crop', 'Kepemimpinan Pramuka & Paskibra', 'Momen instruksi latihan Paskibraka dan pengelolaan administrasi sekretariat Pramuka SMKN 1 Nguling.')">
+                    <div class="aspect-[4/3] w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1526976668912-1a811878dd37?q=80&w=800&auto=format&fit=crop" alt="Organisasi Paskibra Pramuka" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="w-12 h-12 rounded-full bg-love-600 text-white flex items-center justify-center text-lg shadow-lg"><i class="fas fa-heart"></i></span>
+                        </div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 border-t border-rose-900/30">
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/40 mb-2">Organisasi Sekolah</span>
+                        <h4 class="font-serif font-bold text-rose-100 text-base">Pramuka & Paskibraka</h4>
+                        <p class="text-xs text-rose-300/60 mt-1">Latihan baris-berbaris & kepemimpinan.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS SECTION -->
+    <section id="skills" class="py-20 bg-slate-950 border-t border-rose-900/30 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <span class="text-love-400 text-xs font-bold uppercase tracking-widest"><i class="fas fa-heart text-[10px]"></i> Potensi & Bakat</span>
+                <h2 class="text-3xl font-serif font-bold text-white mt-1 mb-3">Keahlian Utama</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-love-500 to-romantic-500 mx-auto rounded-full mb-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Technical Box -->
+                <div class="tilt-card bg-slate-900/90 p-7 rounded-2xl border border-rose-900/40 hover:border-love-500/60 transition shadow-xl reveal">
+                    <h3 class="font-serif font-bold text-lg text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-laptop-code text-love-400"></i> Desain Visual & IT
+                    </h3>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Desain Komunikasi Visual (Photoshop/Corel)</span>
+                                <span class="text-love-400">90%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-love-600 to-romantic-500 rounded-full" data-width="90%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Administrasi & Pengarsipan Dokumen</span>
+                                <span class="text-love-400">92%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-love-600 to-romantic-500 rounded-full" data-width="92%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Dasar Pemrograman Web & IT Systems</span>
+                                <span class="text-love-400">78%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-love-600 to-romantic-500 rounded-full" data-width="78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Softskills Box -->
+                <div class="tilt-card bg-slate-900/90 p-7 rounded-2xl border border-rose-900/40 hover:border-love-500/60 transition shadow-xl reveal">
+                    <h3 class="font-serif font-bold text-lg text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-users-gear text-romantic-400"></i> Kepemimpinan & Softskills
+                    </h3>
+
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Kepemimpinan & Koordinasi Tim</span>
+                                <span class="text-romantic-400">95%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-romantic-600 to-love-500 rounded-full" data-width="95%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Customer Service & Pelayanan Publik</span>
+                                <span class="text-romantic-400">90%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-romantic-600 to-love-500 rounded-full" data-width="90%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-rose-200 mb-1.5">
+                                <span>Kedisiplinan & Komunikasi Publik</span>
+                                <span class="text-romantic-400">92%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-rose-900/40">
+                                <div class="progress-bar-fill h-full bg-gradient-to-r from-romantic-600 to-love-500 rounded-full" data-width="92%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER & CONTACT FORM -->
+    <footer id="contact" class="bg-slate-950 text-white pt-20 pb-12 relative overflow-hidden border-t border-rose-900/40 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-rose-900/30">
+                
+                <!-- Left Info -->
+                <div class="lg:col-span-6 space-y-6 reveal">
+                    <div class="flex items-center gap-2">
+                        <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-love-600 to-romantic-500 flex items-center justify-center text-white font-serif font-bold text-lg shadow-lg">♥</span>
+                        <span class="font-serif font-bold text-2xl text-white">Salsabila Apriyani</span>
+                    </div>
+                    <p class="text-rose-200/70 text-sm leading-relaxed max-w-md">
+                        Terbuka untuk kolaborasi proyek desain komunikasi visual, pekerjaan sekretariat/administrasi, maupun kesempatan magang & karir IT.
+                    </p>
+
+                    <div class="space-y-3.5 text-xs sm:text-sm text-rose-200/90 pt-2">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-900 border border-love-900/60 flex items-center justify-center text-love-400"><i class="fas fa-envelope"></i></span>
+                            <a href="mailto:bilabilll242@gmail.com" class="hover:text-love-300 transition">bilabilll242@gmail.com</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-900 border border-love-900/60 flex items-center justify-center text-emerald-400"><i class="fab fa-whatsapp"></i></span>
+                            <a href="https://wa.me/6288804987186" target="_blank" class="hover:text-love-300 transition">+62 888 0498 7186</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-900 border border-love-900/60 flex items-center justify-center text-rose-400"><i class="fas fa-location-dot"></i></span>
+                            <span>Surabaya, Jawa Timur, Indonesia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Form -->
+                <div class="lg:col-span-6 reveal">
+                    <div class="bg-slate-900/90 p-7 rounded-3xl border border-rose-900/40 shadow-2xl backdrop-blur-xl">
+                        <h3 class="font-serif font-bold text-xl mb-4 text-white flex items-center gap-2">
+                            <i class="fas fa-heart text-love-500 text-sm"></i> Kirim Pesan Langsung
+                        </h3>
+                        <form onsubmit="handleFormSubmit(event)" class="space-y-4">
+                            <div>
+                                <input type="text" required placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-rose-900/40 text-rose-100 text-xs sm:text-sm focus:outline-none focus:border-love-500 transition">
+                            </div>
+                            <div>
+                                <input type="email" required placeholder="Alamat Email" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-rose-900/40 text-rose-100 text-xs sm:text-sm focus:outline-none focus:border-love-500 transition">
+                            </div>
+                            <div>
+                                <textarea required rows="3" placeholder="Tuliskan pesan Anda..." class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-rose-900/40 text-rose-100 text-xs sm:text-sm focus:outline-none focus:border-love-500 transition"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-love-600 via-rose-600 to-romantic-600 hover:from-love-500 hover:to-romantic-500 text-white font-medium text-sm transition shadow-lg shadow-love-600/30">
+                                <i class="fas fa-paper-plane mr-2"></i> Kirim Pesan ♥
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-rose-300/50 gap-4">
+                <p>© 2026 Salsabila Apriyani. Made with ♥ for excellence.</p>
+                <div class="flex space-x-6">
+                    <a href="https://linkedin.com/in/salsabila-apriyani-1244183b3" target="_blank" class="hover:text-rose-200 transition">LinkedIn</a>
+                    <a href="https://instagram.com/april.04" target="_blank" class="hover:text-rose-200 transition">Instagram</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LIGHTBOX MODAL PREVIEW -->
+    <div id="image-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="relative max-w-3xl w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-rose-900/50 transition-all transform scale-95 duration-300" id="modal-box">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 w-9 h-9 bg-slate-950/80 text-rose-200 rounded-full flex items-center justify-center transition focus:outline-none border border-rose-800/40 hover:bg-love-600 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="max-h-[60vh] bg-slate-950 flex items-center justify-center overflow-hidden">
+                <img id="modal-img" src="" alt="Certificate Preview" class="max-h-[60vh] w-auto object-contain">
+            </div>
+            <div class="p-6 bg-slate-900">
+                <h3 id="modal-title" class="text-xl font-serif font-bold text-rose-100 mb-2"></h3>
+                <p id="modal-desc" class="text-xs sm:text-sm text-rose-200/70 leading-relaxed"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-rose-100 text-xs font-medium px-5 py-3 rounded-full shadow-2xl border border-love-500/50 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
+        <i class="fas fa-heart text-love-500"></i>
+        <span>Pesan Anda berhasil terkirim! Terima kasih. ♥</span>
+    </div>
+
+    <!-- JAVASCRIPT ANIMATIONS & LOGIC -->
+    <script>
+        // 1. FLOATING HEART PARTICLES CANVAS BACKGROUND
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let heartsArray = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 12 + 6;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.rotation = Math.random() * Math.PI;
+                this.rotSpeed = (Math.random() - 0.5) * 0.02;
+            }
+
+            drawHeart(x, y, size, opacity, rotation) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rotation);
+                ctx.beginPath();
+                ctx.globalAlpha = opacity;
+                ctx.fillStyle = '#f43f5e';
+                
+                // Heart shape formula
+                const d = size;
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-d / 2, -d / 2, -d, d / 3, 0, d);
+                ctx.bezierCurveTo(d, d / 3, d / 2, -d / 2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotSpeed;
+
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                this.drawHeart(this.x, this.y, this.size, this.opacity, this.rotation);
+            }
+        }
+
+        function initHearts() {
+            heartsArray = [];
+            const count = Math.floor((canvas.width * canvas.height) / 20000);
+            for (let i = 0; i < count; i++) {
+                heartsArray.push(new HeartParticle());
+            }
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < heartsArray.length; i++) {
+                heartsArray[i].update();
+                heartsArray[i].draw();
+            }
+            requestAnimationFrame(animateHearts);
+        }
+        initHearts();
+        animateHearts();
+
+        // 2. CURSOR HEART TRAIL EFFECT
+        const cursorCanvas = document.getElementById('cursor-canvas');
+        const cCtx = cursorCanvas.getContext('2d');
+        let cursorTrail = [];
+
+        function resizeCursorCanvas() {
+            cursorCanvas.width = window.innerWidth;
+            cursorCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCursorCanvas);
+        resizeCursorCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            for (let i = 0; i < 2; i++) {
+                cursorTrail.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    size: Math.random() * 8 + 4,
+                    speedX: (Math.random() - 0.5) * 1.5,
+                    speedY: (Math.random() - 0.5) * 1.5 - 1,
+                    opacity: 1,
+                    color: Math.random() > 0.5 ? '#f43f5e' : '#ec4899'
+                });
+            }
+        });
+
+        function animateCursorTrail() {
+            cCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+
+            for (let i = 0; i < cursorTrail.length; i++) {
+                let p = cursorTrail[i];
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.opacity -= 0.025;
+
+                if (p.opacity <= 0) {
+                    cursorTrail.splice(i, 1);
+                    i--;
+                    continue;
+                }
+
+                cCtx.save();
+                cCtx.translate(p.x, p.y);
+                cCtx.beginPath();
+                cCtx.globalAlpha = p.opacity;
+                cCtx.fillStyle = p.color;
+                
+                const d = p.size;
+                cCtx.moveTo(0, 0);
+                cCtx.bezierCurveTo(-d / 2, -d / 2, -d, d / 3, 0, d);
+                cCtx.bezierCurveTo(d, d / 3, d / 2, -d / 2, 0, 0);
+                cCtx.fill();
+                cCtx.restore();
+            }
+
+            requestAnimationFrame(animateCursorTrail);
+        }
+        animateCursorTrail();
+
+        // 3. AUDIO MUSIC CONTROLLER
+        const audio = document.getElementById('bg-audio');
+        const musicBtn = document.getElementById('music-toggle');
+        const musicIcon = document.getElementById('music-icon');
+        const musicStatus = document.getElementById('music-status');
+        const musicWave = document.getElementById('music-wave');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                musicIcon.className = 'fas fa-heart text-white text-base';
+                musicStatus.innerText = 'Putar Musik ♥';
+                musicWave.classList.add('music-paused');
+                musicBtn.classList.add('animate-heartbeat');
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    musicIcon.className = 'fas fa-pause text-white text-sm';
+                    musicStatus.innerText = 'Memutar Musik';
+                    musicWave.classList.remove('music-paused');
+                    musicBtn.classList.remove('animate-heartbeat');
+                    isPlaying = true;
+                }).catch(err => {
+                    console.log('Autoplay blocked:', err);
+                });
+            }
+        });
+
+        // 4. SCROLL REVEAL & SKILL BAR TRIGGER
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+
+            reveals.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 80) {
+                    el.classList.add('active');
+                }
+            });
+
+            const skillSection = document.getElementById('skills');
+            if (skillSection) {
+                const skillTop = skillSection.getBoundingClientRect().top;
+                if (skillTop < windowHeight - 100) {
+                    document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                }
+            }
+        }
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // 5. 3D TILT EFFECT ON CARDS
+        const tiltCards = document.querySelectorAll('.tilt-card');
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+            });
+        });
+
+        // 6. GALLERY FILTER
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => {
+                if(btn.dataset.filter === category) {
+                    btn.className = 'filter-btn px-6 py-2 rounded-full text-xs font-bold transition bg-gradient-to-r from-love-600 to-romantic-600 text-white shadow-lg';
+                } else {
+                    btn.className = 'filter-btn px-6 py-2 rounded-full text-xs font-bold transition bg-slate-900 text-rose-200 border border-rose-900/50 hover:bg-love-950';
+                }
+            });
+
+            items.forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 7. LIGHTBOX MODAL
+        function openModal(imgSrc, title, desc) {
+            document.getElementById('modal-img').src = imgSrc;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            
+            const modal = document.getElementById('image-modal');
+            const modalBox = document.getElementById('modal-box');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalBox.classList.remove('scale-95');
+                modalBox.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            const modalBox = document.getElementById('modal-box');
+            
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        document.getElementById('image-modal').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('image-modal')) {
+                closeModal();
+            }
+        });
+
+        // 8. MOBILE MENU TOGGLE
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 9. FORM HANDLER
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            e.target.reset();
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
